@@ -9,28 +9,24 @@ const logoutBtn = document.getElementById('logout-btn');
 const mainContent = document.getElementById('main-content');
 const loginModal = document.getElementById('login-modal');
 
-// Grab the login button
-const loginBtn = document.getElementById('login-btn');
+// Handle login button click
 if (loginBtn) {
   loginBtn.addEventListener('click', () => {
-    // Log to see if the click event is triggering
-    console.log('Login button clicked');
-    window.location.href = AUTH_URL;
+    window.location.href = AUTH_URL; // Redirect to Spotify authentication
   });
-} else {
-  console.error('Login button not found!');
 }
-// This will trigger when the login button is clicked
-loginBtn.addEventListener('click', () => {
-  window.location.href = AUTH_URL;  // Redirect to Spotify authentication
-});
-// Show the login modal when the page loads
-loginModal.style.display = 'flex';
 
-// Check if the user is logged in when the page loads
+// Show the login modal when the page loads if not logged in
 window.addEventListener('load', () => {
+  checkLogin(); // Call checkLogin when the page loads
+});
+
+// Check if the user is logged in
+function checkLogin() {
   if (!localStorage.getItem('access_token')) {
-    window.location.replace('https://vishnu07122007.github.io/Spotify-Clone/');
+    // If no token is stored, show the login modal
+    mainContent.style.display = 'none';
+    loginModal.style.display = 'flex';
   } else {
     accessToken = localStorage.getItem('access_token');
     mainContent.style.display = 'block';
@@ -40,27 +36,23 @@ window.addEventListener('load', () => {
     fetchRecentlyPlayed();
     fetchPlaylists();
   }
-
-  // Prevent back navigation after login/logout
-  history.pushState(null, '', window.location.href);
-  history.back();
-  history.forward();
-});
+}
 
 // Handle logout
 logoutBtn.addEventListener('click', () => {
   localStorage.removeItem('access_token');
   sessionStorage.clear();
-  window.location.replace('https://vishnu07122007.github.io/Spotify-Clone/');
+  window.location.replace('https://vishnu07122007.github.io/Spotify-Clone/'); // Redirect to home page
 });
 
 // Check for access token in the URL and handle login
-function checkLogin() {
+function handleSpotifyRedirect() {
   const hash = window.location.hash;
   const accessTokenFromUrl = hash.match(/access_token=([^&]*)/);
   if (accessTokenFromUrl) {
     accessToken = accessTokenFromUrl[1];
-    localStorage.setItem('access_token', accessToken);
+    localStorage.setItem('access_token', accessToken); // Store token
+    window.location.hash = ''; // Clear the hash from the URL
     mainContent.style.display = 'block';
     loginModal.style.display = 'none';
     getUserInfo();
@@ -180,10 +172,6 @@ function displayPlaylists(playlists) {
   });
 }
 
-
-// Call fetchPlaylists to fetch all playlists after login
-fetchPlaylists();
-
 // Periodically check login status every 30 seconds (for example)
 setInterval(() => {
   checkLogin();  // Recheck login status
@@ -193,6 +181,9 @@ setInterval(() => {
 setInterval(() => {
   fetchPlaylists();  // Re-fetch playlists every minute
 }, 60000); // 60000 ms = 1 minute
+
+// Initial login check
+handleSpotifyRedirect();
 
 // Fetch recently played tracks from Spotify API
 function fetchRecentlyPlayed() {
