@@ -1,0 +1,101 @@
+body {
+ font-family: Arial, sans-serif;
+ background-color: #121212;
+ color: white;
+ margin: 0;
+ padding: 0;
+}
+
+.player-header {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ padding: 10px 20px;
+ background-color: #1db954;
+}
+
+h1{
+ text-align: center;
+}
+
+.back-button {
+ background: none;
+ border: none;
+ color: white;
+ font-size: 16px;
+ cursor: pointer;
+}
+.back-button:hover{
+ color: #121212;
+}
+
+.player-container {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ padding: 20px;
+ gap: 20px;
+}
+
+.song-details {
+ display: flex;
+ align-items: center;
+ gap: 20px;
+}
+
+#album-art {
+ width: 150px;
+ height: 150px;
+ border-radius: 10px;
+ background-color: #282828;
+}
+
+.song-info {
+ text-align: left;
+}
+
+.controls {
+ display: flex;
+ gap: 15px;
+}
+
+.control-button {
+ background: none;
+ border: none;
+ font-size: 24px;
+ color: white;
+ cursor: pointer;
+}
+
+.control-button:hover {
+ color: #1db954;
+}
+
+.progress-container {
+ display: flex;
+ align-items: center;
+ width: 80%;
+ gap: 10px;
+}
+
+#progress-bar {
+ flex: 1;
+}
+
+.playlist {
+ width: 100%;
+ max-width: 600px;
+ text-align: left;
+}
+
+.playlist-item {
+ padding: 10px;
+ cursor: pointer;
+ background-color: #282828;
+ margin: 5px 0;
+ border-radius: 5px;
+}
+
+.playlist-item:hover {
+ background-color: #1db954;
+}

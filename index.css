@@ -1,0 +1,554 @@
+/* General Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #121212;
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin-left: 15px;
+margin-bottom: 30px;
+}
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  height: 100%;
+  background-color: #181818;
+  position: fixed;
+  top: 0;
+  left: -250px; /* Sidebar is hidden by default */
+  transition: left .3s ease;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto; 
+}
+
+.sidebar.open {
+  left: 0; /* Sidebar shown when 'open' class is added */
+}
+
+/* Hamburger Menu */
+.menu-toggle {
+  position: relative;
+  left: 1px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #fff;
+  background-color: #00ff37;
+  padding: 5px;
+  border-radius: 50%;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 2px;
+  margin-right: 15px;
+}
+
+.menu-toggle i {
+  font-size: 1.5em;
+}
+
+/* Sidebar and Main Content Interaction (Mobile & Full Screen Mode) */
+@media (max-width: 768px) {
+  .sidebar {
+      left: -250px; /* Sidebar hidden by default */
+  }
+
+  .sidebar.open {
+      left: 0; /* Sidebar shown when 'open' class is added */
+  }
+
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #121212;
+    transition: margin-left 0.3s ease; /* Smooth transition for content */
+    margin-top: 0; 
+  }
+
+  /* If sidebar is hidden, main content takes full screen */
+  .sidebar.hidden + .main-content {
+      margin-left: 0;
+  }
+
+  /* If sidebar is shown, content moves to the right */
+  .sidebar.open + .main-content {
+      margin-left: 250px;
+  }
+}
+
+
+/* Optional: Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  display: none;
+}
+
+.modal-content {
+  background-color: #181818;
+  padding: 40px;
+  border-radius: 8px;
+  text-align: center;
+  width: 300px;
+}
+
+/* Optional: Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgb(0, 0, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+}
+
+.modal-content {
+  background-color: #181818;
+  padding: 40px;
+  border-radius: 8px;
+  text-align: center;
+  width: 300px;
+}
+
+
+#logout-btn:hover{
+
+  background-color: #ff0404;
+  transition: background-color 0.9ms  ease;
+ 
+}
+
+
+/* Login Button */
+#login-btn {
+  background-color: #1db954;
+  padding: 12px 25px;
+  border-radius: 50px;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#login-btn:hover {
+  background-color: #1ed760;
+}
+
+/* Main Content */
+#main-content {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  background-color: #121212;
+}
+
+
+.logo {
+  font-size: 1.8em;
+  color: #1db954;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.menu li {
+  list-style: none;
+  margin: 15px 0;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 10px 20px;
+  width: 100%;
+}
+
+.menu li:hover {
+  background-color: #282828;
+  color: #1db954;
+}
+
+button {
+  background-color: #1db954;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #23bb58;
+}
+
+
+.section {
+  margin-bottom: 20px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  position: relative;
+}
+#search-bar {
+  flex: 1;
+  width: 70%;
+  min-width: 40px;
+  padding: 10px 15px;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  color: rgb(0, 0, 0);
+  font-size: 16px;
+}
+
+#search-bar:focus {
+  outline: none;
+  background-color: #ffffff;
+}
+
+#search-btn {
+  flex-shrink: 0; /* Prevent the button from shrinking */
+  text-align: center;
+  width: 100px; /* Adjusted width */
+  padding: 10px 15px; /* Adjusted padding */
+  background-color: #1db954;
+  border: none;
+  border-radius: 50px;
+  min-height: 35px;
+  color: white;
+  cursor: pointer;
+  margin-left: 7px;
+  font-size: 17px;
+}
+#search-btn:hover {
+  background-color: #1ed760;
+}
+/* For responsive design, arrange icons and search bar side by side */
+@media (max-width: 768px) {
+  .header {
+    flex-wrap: wrap; /* Allow wrapping if space is tight */
+    padding: 10px;
+  }
+
+  #search-bar {
+    width: calc(100% - 80px); /* Adjust search bar width for smaller screens */
+  }
+
+  #search-btn {
+    width: 15%;
+    padding: 5px;
+  }
+}
+
+
+/* Categories Section */
+.categories-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 15px;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-item {
+  width: 150px;
+  height: 150px;
+  background-color: #282828;
+  border-radius: 8px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+.category-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.category-item:hover {
+  transform: scale(1.05);
+}
+
+/* Text under each category card */
+.category-name {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  color: #fff;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* See All Arrow Button */
+#see-all-btn {
+  cursor: pointer;
+  font-size: 24px;
+  color: #1db954;
+  margin-left: 10px;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none; /* Remove underline */
+  transition: color 0.3s ease;
+}
+
+/* Optional: Style the arrow icon if necessary */
+#see-all-btn:hover {
+  color: #1ed760;
+}
+#see-all-btn i {
+  transition: transform 0.3s ease;
+}
+
+#see-all-btn:hover i {
+  transform: translateX(9px); /* Slight movement on hover */
+}
+/* All Categories Section */
+.all-categories-container {
+  display: none; /* Initially hidden */
+  flex-wrap: wrap;
+  padding: 20px;
+  gap: 20px;
+}
+
+.all-categories-container .category-item {
+  width: 150px;
+  height: 150px;
+  text-align: ceter;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f5f5f5;
+}
+
+.all-categories-container .category-item img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Trending Songs - Grid */
+.songs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+
+/* Playlist Section - Flexbox with Scroll */
+.playlist-container {
+  display: flex;
+  overflow-x: auto;  /* Enable horizontal scrolling */
+  gap: 20px;
+  padding: 20px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  scrollbar-width:thin; /* Firefox: make the scrollbar thin */
+}
+
+.playlist-container::-webkit-scrollbar {
+  height: 9px;  /* Vertical scrollbar thickness */
+}
+
+.playlist-container::-webkit-scrollbar-thumb {
+  background-color: #1db954;  /* Scrollbar color */
+  border-radius: 10px;
+}
+
+.playlist-container::-webkit-scrollbar-track {
+  background-color: #282828;  /* Scrollbar track color */
+}
+
+/* Playlist Item */
+.playlist-item {
+  background-color: #282828;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  cursor: pointer;
+  padding: 20px;
+  height: 340px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  scroll-snap-align: start;  /* Enable scroll snapping */
+  flex-shrink: 0;  /* Prevent shrinking of items */
+  width: 280px;  /* Fixed width to maintain grid-like appearance */
+}
+
+.playlist-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.playlist-item p {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  transition: color 0.3s ease;
+}
+
+.playlist-item:hover p {
+  color: #1db954;
+}
+.playlist-item:hover {
+  transform: translateY(-5px); /* Slight lift effect on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5); /* Increase shadow on hover */
+ }
+ 
+
+/* Make playlist section responsive */
+@media (max-width: 1200px) {
+  .playlist-container {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .playlist-item {
+    height: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .playlist-container {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .playlist-item {
+    height: 240px;
+  }
+}
+/* Styling for the Arrow Icon next to Playlists */
+.view-all-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #1db954; /* Green color */
+  font-size: 24px;
+  margin-left: 1px; /* Space between title and arrow */
+  text-decoration: none; /* Remove underline */
+  transition: color 0.3s ease;
+}
+
+.view-all-arrow:hover {
+  color: #1ed760; /* Change color on hover */
+}
+
+/* Optional: Style the arrow icon if necessary */
+.view-all-arrow i {
+  transition: transform 0.3s ease;
+}
+
+.view-all-arrow:hover i {
+  transform: translateX(9px); /* Slight movement on hover */
+}
+
+
+
+/* Footer */
+.music-player {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #181818;
+  padding: 10px 20px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  color: #fff;
+}
+
+#now-playing {
+  font-size: 16px;
+
+}
+
+.premium {
+  color: #b3b3b3;
+}
+
+
+   
+/* User Info Text Wrapping */
+#user-info {
+  font-size: 20px;
+  color: #ffffff;
+  word-wrap: break-word; /* Break long words */
+  overflow-wrap: break-word; /* Ensures compatibility for word wrapping */
+  word-break: break-word; /* Break words at proper points */
+  white-space: normal; /* Allow text to wrap onto the next line */
+  margin: 10px;
+}
+
+#user-status {
+  font-size: 14px;
+  color: #5eb91d;
+  word-wrap: break-word; /* Break long words */
+  overflow-wrap: break-word; /* Ensures compatibility for word wrapping */
+  word-break: break-word; /* Break words at proper points */
+  white-space: normal; /* Allow text to wrap onto the next line */
+  margin: 10px;
+}
+
+
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  #search-bar {
+    width: calc(100% - 150px); /* Adjust width for smaller screens */
+  }
+
+  #search-btn {
+    width: 100px; /* Adjust width for smaller screens */
+    padding: 5px 10px;
+    font-size: 14px;
+  }
+}

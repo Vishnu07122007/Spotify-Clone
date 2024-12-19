@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify Categories</title>
+  <link rel="stylesheet" href="category.css"> <!-- Include the external stylesheet -->
+</head>
+<body>
+  <header>
+    <nav>
+     <a id="back-btn">⬅ Back</a>
+     <span class="nav-text"> Explore Categories</span>
+
+    </nav>
+  </header>
+
+  <main>
+    <div id="categories-container" class="categories-grid">
+      <!-- Categories will be dynamically loaded here -->
+    </div>
+    <div id="loader" class="loader" style="display: none;">Loading...</div>
+  </main>
+
+  <footer>
+    <p>Powered by Spotify API</p>
+  </footer>
+
+  <script>
+    // Fetch all categories and display them
+    function fetchAllCategories() {
+      document.getElementById('loader').style.display = 'block';
+
+      fetch('https://api.spotify.com/v1/browse/categories', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const categoriesContainer = document.getElementById('categories-container');
+          categoriesContainer.innerHTML = ''; // Clear existing content
+
+          const categories = data.categories.items;
+          categories.forEach((category) => {
+            const categoryElement = document.createElement('div');
+            categoryElement.classList.add('category-item');
+
+            categoryElement.innerHTML = `
+              <img src="${category.icons[0].url}" alt="${category.name}">
+              <p>${category.name}</p>
+            `;
+
+            categoriesContainer.appendChild(categoryElement);
+          });
+        })
+        .catch((error) => console.error('Error fetching categories:', error))
+        .finally(() => {
+          document.getElementById('loader').style.display = 'none';
+        });
+    }
+
+    // On page load, fetch categories
+    window.onload = () => {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        window.location.href = 'index.html'; // Redirect to login if not authenticated
+      } else {
+        fetchAllCategories();
+      }
+    };
+    // When the back button is clicked
+document.getElementById('back-btn').addEventListener('click', () => {
+  window.history.back(); // Go back to the previous page
+});
+
+  </script>
+</body>
+</html>

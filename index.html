@@ -1,0 +1,104 @@
+ <html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaveRockerz</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div id="loader" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; color: #fff;">
+        Loading...
+    </div>
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <h2>Log in with Spotify account</h2>
+            <button id="login-btn">Log in / SIgn up</button>
+        </div>
+    </div>
+    <!-- Main Content (Visible after login) -->
+    <div id="main-content" style="display: none;">
+  
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <h1 class="logo">WaveRockerz</h1>
+            <ul class="menu">
+                <li id="home-btn">Home</li>
+                <li id="categories-btn">Categories</li>
+                <li id="playlists-btn">Playlists</li>
+            </ul>
+            <button id="logout-btn">Logout</button>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-area">
+            <header class="header">
+               <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle" class="menu-toggle">
+        <i class="fas fa-bars"></i> <!-- Hamburger Icon -->
+    </button>
+                <!-- Search Bar -->
+                <input type="text" id="search-bar" placeholder="Search for song" />
+                <!-- Search Button -->
+                <button id="search-btn">Search</button>
+                <!-- User Info -->
+                <div id="user-info">
+                    <span id="user-name"></span>
+                    <span id="user-status" class="premium">Premium</span>
+                </div>
+            </header>
+            <section class="section">
+                <h2>
+                    Categories
+                    <a href="category.html" id="see-all-btn" class="see-all-btn">
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </h2>
+                <div id="categories-container" class="categories-container"></div>
+            </section>
+
+            <section class="section">
+                <h2>
+                    Playlists
+                    <a href="playlist.html" id="view-all-playlists" class="view-all-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </h2>
+                <div id="playlists-container" class="playlist-container"></div>
+            </section>
+
+            <section class="section">
+                <h2>Trending</h2>
+                <div id="trending" class="songs-grid"></div>
+            </section>
+
+            <section class="section">
+                <h2>Recently Played</h2>
+                <div id="recently-played" class="songs-grid"></div>
+            </section>
+
+            <section class="section">
+                <h2>Artists</h2>
+                <div id="artists-container" class="songs-grid"></div>
+            </section>
+
+            <footer class="music-player">
+                <div id="now-playing">Now Playing: <span id="song-name">Echoes of Midnight</span></div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="app.js">
+        document.getElementById('home-btn').addEventListener('click', () => {
+            window.history.back();
+        });
+        
+        // Sidebar toggle script
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('open');
+        });
+    </script>
+</body>
+</html>
