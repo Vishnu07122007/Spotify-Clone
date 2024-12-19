@@ -26,7 +26,8 @@ loginBtn.addEventListener('click', () => {
 // Handle logging out
 logoutBtn.addEventListener('click', () => {
   localStorage.removeItem('access_token');
-  window.location.href = 'https://vishnu07122007.github.io/Spotify-Clone/';  // Redirect to login page
+  console.log('Redirecting to: https://vishnu07122007.github.io/Spotify-Clone/');
+  window.location.href = 'https://vishnu07122007.github.io/Spotify-Clone/';
 });
 
 // Check if the user is logged in
