@@ -24,52 +24,40 @@ loginBtn.addEventListener('click', () => {
 });
 
 // Handle logging out
-logoutBtn.addEventListener('click', () => {
-  // Clear access tokens and user data from localStorage and sessionStorage
+llogoutBtn.addEventListener('click', () => {
+  // Clear user data
   localStorage.clear();
   sessionStorage.clear();
 
-  // Clear application-level data (if stored in variables)
-  accessToken = null;
-
-  // Prevent the use of cached pages
-  if ('caches' in window) {
-    caches.keys().then((cacheNames) => {
-      cacheNames.forEach((cacheName) => caches.delete(cacheName));
-    });
-  }
-
-  // Redirect to the login page or home page
+  // Redirect to login page
   window.location.href = 'https://vishnu07122007.github.io/Spotify-Clone/';
 });
-// Disable back button cache after logout
-history.pushState(null, '', location.href);
-window.onpopstate = function () {
-  history.go(1);
-};
-function saveWithExpiry(key, value, ttl) {
-  const now = new Date();
-  const item = {
-    value,
-    expiry: now.getTime() + ttl, // Expiry time in milliseconds
-  };
-  localStorage.setItem(key, JSON.stringify(item));
-}
-
-function getWithExpiry(key) {
-  const itemStr = localStorage.getItem(key);
-  if (!itemStr) return null;
-
-  const item = JSON.parse(itemStr);
-  const now = new Date();
-
-  if (now.getTime() > item.expiry) {
-    localStorage.removeItem(key); // Remove expired item
-    return null;
+// Prevent access to pages after logout
+window.addEventListener('load', () => {
+  if (!localStorage.getItem('access_token')) {
+    // Redirect to login if no access token
+    window.location.href = 'https://vishnu07122007.github.io/Spotify-Clone/';
+  } else {
+    // Ensure sensitive pages aren't cached
+    window.history.pushState(null, '', window.location.href);
+    window.onpopstate = function () {
+      window.history.pushState(null, '', window.location.href);
+    };
   }
-
-  return item.value;
+});
+// Simulated route guard for SPA
+function isAuthenticated() {
+  return !!localStorage.getItem('access_token');
 }
+
+function navigateTo(route) {
+  if (route === '/dashboard' && !isAuthenticated()) {
+    window.location.href = '/login';
+  } else {
+    // Navigate to the route
+  }
+}
+
 
 // Check if the user is logged in
 function checkLogin() {
