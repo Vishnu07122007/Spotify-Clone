@@ -5,13 +5,6 @@ const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&
 let accessToken = null;
 
 const loginBtn = document.getElementById('login-btn');
-const searchBar = document.getElementById('search-bar');
-const searchButton = document.getElementById('search-btn');
-const recentlyPlayedContainer = document.getElementById('recently-played');
-const categoriesContainer = document.getElementById('categories-container');
-const playlistsContainer = document.getElementById('playlists-container'); // Container for playlists
-const userInfo = document.getElementById('user-info');
-const userName = document.getElementById('user-name');
 const logoutBtn = document.getElementById('logout-btn');
 const mainContent = document.getElementById('main-content');
 const loginModal = document.getElementById('login-modal');
@@ -19,63 +12,51 @@ const loginModal = document.getElementById('login-modal');
 // Show the login modal when the page loads
 loginModal.style.display = 'flex';
 
+// Check if the user is logged in when the page loads
+window.addEventListener('load', () => {
+  if (!localStorage.getItem('access_token')) {
+    window.location.replace('https://vishnu07122007.github.io/Spotify-Clone/');
+  } else {
+    accessToken = localStorage.getItem('access_token');
+    mainContent.style.display = 'block';
+    loginModal.style.display = 'none';
+    getUserInfo();
+    fetchCategories();
+    fetchRecentlyPlayed();
+    fetchPlaylists();
+  }
+
+  // Prevent back navigation after login/logout
+  history.pushState(null, '', window.location.href);
+  history.back();
+  history.forward();
+});
+
+// Handle login
 loginBtn.addEventListener('click', () => {
   window.location.href = AUTH_URL;
 });
 
-// Handle logging out
+// Handle logout
 logoutBtn.addEventListener('click', () => {
-  // Clear all user data from localStorage, sessionStorage, and any global states
   localStorage.removeItem('access_token');
   sessionStorage.clear();
-
-  // Replace the current page with the login page to prevent users from going back to the logged-in page
   window.location.replace('https://vishnu07122007.github.io/Spotify-Clone/');
 });
-window.addEventListener('load', () => {
-  // Check if the user is logged in
-  if (!localStorage.getItem('access_token')) {
-    // Redirect to the login page if no access token is found
-    window.location.href = 'https://vishnu07122007.github.io/Spotify-Clone/';
 
-    // Prevent back navigation by pushing a new state
-    history.pushState(null, '', window.location.href);
-    history.back(); // Go back to the login page if any back operation is attempted
-    history.forward(); // Prevent going back to the previous page
-  }
-});
-// Always check if the user is logged in when loading a page
-window.addEventListener('load', () => {
-  if (!localStorage.getItem('access_token')) {
-    // If no access token is found, redirect to login page
-    window.location.href = 'https://vishnu07122007.github.io/Spotify-Clone/';
-  }
-});
-
-
-
-// Check if the user is logged in
+// Check for access token in the URL and handle login
 function checkLogin() {
   const hash = window.location.hash;
   const accessTokenFromUrl = hash.match(/access_token=([^&]*)/);
   if (accessTokenFromUrl) {
     accessToken = accessTokenFromUrl[1];
     localStorage.setItem('access_token', accessToken);
-    loginModal.style.display = 'none';
     mainContent.style.display = 'block';
+    loginModal.style.display = 'none';
     getUserInfo();
     fetchCategories();
     fetchRecentlyPlayed();
-    fetchPlaylists(); // Fetch user's playlists after login
-  } else {
-    accessToken = localStorage.getItem('access_token');
-    if (accessToken) {
-      mainContent.style.display = 'block';
-      getUserInfo();
-      fetchCategories();
-      fetchRecentlyPlayed();
-      fetchPlaylists(); // Fetch user's playlists after login
-    }
+    fetchPlaylists();
   }
 }
 
@@ -88,12 +69,12 @@ function getUserInfo() {
   })
     .then((response) => response.json())
     .then((data) => {
-      userName.textContent = data.display_name;
+      document.getElementById('user-name').textContent = data.display_name;
     })
     .catch((error) => console.error('Error fetching user info:', error));
 }
 
-// Fetch categories from Spotify API and display them
+// Fetch categories from Spotify API
 function fetchCategories() {
   fetch('https://api.spotify.com/v1/browse/categories', {
     headers: {
@@ -103,109 +84,58 @@ function fetchCategories() {
     .then((response) => response.json())
     .then((data) => {
       const categories = data.categories.items;
-      categoriesContainer.innerHTML = ''; // Clear previous categories
+      const categoriesContainer = document.getElementById('categories-container');
+      categoriesContainer.innerHTML = '';
 
-      // Show the categories on the main page
       categories.forEach((category) => {
         const categoryElement = document.createElement('div');
         categoryElement.classList.add('category-item');
-        
-        // Add category image and name
         categoryElement.innerHTML = `
           <img src="${category.icons[0].url}" alt="${category.name}">
           <p class="category-name">${category.name}</p>
-          <button class="see-all-btn" onclick="displayAllCategories()">see-all-btn</button>
         `;
-        
         categoriesContainer.appendChild(categoryElement);
       });
     })
     .catch((error) => console.error('Error fetching categories:', error));
 }
 
-// Display all categories on a new page or section when "See All" is clicked
-function displayAllCategories() {
-  // Show the loader while fetching data
-  document.getElementById('loader').style.display = 'block';
-
-  fetch('https://api.spotify.com/v1/browse/categories', {
+// Fetch playlists for the user
+function fetchPlaylists() {
+  fetch('https://api.spotify.com/v1/me/playlists', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   })
     .then((response) => response.json())
     .then((data) => {
-      const categories = data.categories.items;
-      const allCategoriesContainer = document.createElement('div');
-      allCategoriesContainer.classList.add('all-categories-container');
-
-      // Create the Back button
-      const backButton = document.createElement('button');
-      backButton.textContent = 'Back';
-      backButton.classList.add('back-button');
-      backButton.addEventListener('click', () => {
-        allCategoriesContainer.style.display = 'none'; // Hide all categories
-        categoriesContainer.style.display = 'block'; // Show the main categories again
-      });
-
-      allCategoriesContainer.appendChild(backButton);
-
-      // Display all categories
-      categories.forEach((category) => {
-        const categoryElement = document.createElement('div');
-        categoryElement.classList.add('category-item');
-
-        categoryElement.innerHTML = `
-          <img src="${category.icons[0].url}" alt="${category.name}">
-          <p class="category-name">${category.name}</p>
+      const playlistsContainer = document.getElementById('playlists-container');
+      playlistsContainer.innerHTML = '';
+      data.items.forEach((playlist) => {
+        const playlistElement = document.createElement('div');
+        playlistElement.classList.add('playlist-item');
+        playlistElement.innerHTML = `
+          <img src="${playlist.images[0]?.url}" alt="${playlist.name}" />
+          <p>${playlist.name}</p>
         `;
-        allCategoriesContainer.appendChild(categoryElement);
+        playlistElement.addEventListener('click', () => {
+          window.location.href = `playlist.html?id=${playlist.id}`;
+        });
+        playlistsContainer.appendChild(playlistElement);
       });
-
-      // Hide the main categories and show the full list
-      categoriesContainer.style.display = 'none';
-      document.body.appendChild(allCategoriesContainer);
-      
-      // Hide loader after the content is loaded
-      document.getElementById('loader').style.display = 'none';
     })
-    .catch((error) => {
-      console.error('Error fetching all categories:', error);
-      document.getElementById('loader').style.display = 'none';
-    });
+    .catch((error) => console.error('Error fetching playlists:', error));
 }
 
-// Fetch playlists for the user with pagination
-function fetchPlaylists() {
-  let allPlaylists = [];
-  let url = 'https://api.spotify.com/v1/me/playlists';
-  
-  // Fetch playlists with pagination
-  function fetchNextPage(nextUrl) {
-    fetch(nextUrl || url, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Fetched playlists:', data);  // Log the fetched data
-        
-        allPlaylists = allPlaylists.concat(data.items);
-
-        // Check if there's another page to fetch
-        if (data.next) {
-          fetchNextPage(data.next); // Recursively fetch next page
-        } else {
-          // Once all pages are fetched, display the playlists
-          displayPlaylists(allPlaylists);
-        }
-      })
-      .catch((error) => console.error('Error fetching playlists:', error));
+// Handle search functionality
+const searchButton = document.getElementById('search-btn');
+searchButton.addEventListener('click', () => {
+  const query = document.getElementById('search-bar').value;
+  if (query) {
+    searchSpotify(query);
   }
+});
 
-  fetchNextPage();
-}
 function searchSpotify(query) {
   fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=playlist&limit=10`, {
     headers: {
@@ -214,20 +144,18 @@ function searchSpotify(query) {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log('Search results:', data);  // Log the search results
       const playlists = data.playlists.items;
-      displayPlaylists(playlists); // Display search results as playlists
+      displayPlaylists(playlists);
     })
     .catch((error) => console.error('Error performing search:', error));
 }
 
-
-// Display the playlists or show a message if empty
 function displayPlaylists(playlists) {
-  playlistsContainer.innerHTML = ''; // Clear previous playlist items
+  const playlistsContainer = document.getElementById('playlists-container');
+  playlistsContainer.innerHTML = '';
 
   if (playlists.length === 0) {
-    playlistsContainer.innerHTML = '<p>No playlists available</p>'; // Message if no playlists
+    playlistsContainer.innerHTML = '<p>No playlists available</p>';
     return;
   }
 
@@ -238,15 +166,10 @@ function displayPlaylists(playlists) {
       <img src="${playlist.images[0]?.url}" alt="${playlist.name}" />
       <p>${playlist.name}</p>
     `;
-    
-    // Link to the playlist page with the playlist ID
-    playlistElement.addEventListener('click', () => {
-      window.location.href = `playlist.html?id=${playlist.id}`; // Redirect to playlist page with playlist ID
-    });
-    
     playlistsContainer.appendChild(playlistElement);
   });
 }
+
 
 // Call fetchPlaylists to fetch all playlists after login
 fetchPlaylists();
