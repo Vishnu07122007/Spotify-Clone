@@ -24,39 +24,34 @@ loginBtn.addEventListener('click', () => {
 });
 
 // Handle logging out
-llogoutBtn.addEventListener('click', () => {
-  // Clear user data
-  localStorage.clear();
+logoutBtn.addEventListener('click', () => {
+  // Clear all user data from localStorage, sessionStorage, and any global states
+  localStorage.removeItem('access_token');
   sessionStorage.clear();
 
-  // Redirect to login page
-  window.location.href = 'https://vishnu07122007.github.io/Spotify-Clone/';
+  // Replace the current page with the login page to prevent users from going back to the logged-in page
+  window.location.replace('https://vishnu07122007.github.io/Spotify-Clone/');
 });
-// Prevent access to pages after logout
+window.addEventListener('load', () => {
+  // Check if the user is logged in
+  if (!localStorage.getItem('access_token')) {
+    // Redirect to the login page if no access token is found
+    window.location.href = 'https://vishnu07122007.github.io/Spotify-Clone/';
+
+    // Prevent back navigation by pushing a new state
+    history.pushState(null, '', window.location.href);
+    history.back(); // Go back to the login page if any back operation is attempted
+    history.forward(); // Prevent going back to the previous page
+  }
+});
+// Always check if the user is logged in when loading a page
 window.addEventListener('load', () => {
   if (!localStorage.getItem('access_token')) {
-    // Redirect to login if no access token
+    // If no access token is found, redirect to login page
     window.location.href = 'https://vishnu07122007.github.io/Spotify-Clone/';
-  } else {
-    // Ensure sensitive pages aren't cached
-    window.history.pushState(null, '', window.location.href);
-    window.onpopstate = function () {
-      window.history.pushState(null, '', window.location.href);
-    };
   }
 });
-// Simulated route guard for SPA
-function isAuthenticated() {
-  return !!localStorage.getItem('access_token');
-}
 
-function navigateTo(route) {
-  if (route === '/dashboard' && !isAuthenticated()) {
-    window.location.href = '/login';
-  } else {
-    // Navigate to the route
-  }
-}
 
 
 // Check if the user is logged in
