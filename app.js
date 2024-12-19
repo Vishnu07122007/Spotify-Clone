@@ -9,6 +9,21 @@ const logoutBtn = document.getElementById('logout-btn');
 const mainContent = document.getElementById('main-content');
 const loginModal = document.getElementById('login-modal');
 
+// Grab the login button
+const loginBtn = document.getElementById('login-btn');
+if (loginBtn) {
+  loginBtn.addEventListener('click', () => {
+    // Log to see if the click event is triggering
+    console.log('Login button clicked');
+    window.location.href = AUTH_URL;
+  });
+} else {
+  console.error('Login button not found!');
+}
+// This will trigger when the login button is clicked
+loginBtn.addEventListener('click', () => {
+  window.location.href = AUTH_URL;  // Redirect to Spotify authentication
+});
 // Show the login modal when the page loads
 loginModal.style.display = 'flex';
 
@@ -30,11 +45,6 @@ window.addEventListener('load', () => {
   history.pushState(null, '', window.location.href);
   history.back();
   history.forward();
-});
-
-// Handle login
-loginBtn.addEventListener('click', () => {
-  window.location.href = AUTH_URL;
 });
 
 // Handle logout
