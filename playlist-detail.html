@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Playlist Details</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+
   <style>
     /* General Body Styling */
     body {
@@ -137,7 +139,7 @@
         Loading...
     </div>
   <!-- Back Button (Fixed Position) -->
-  <button class="back-button-top" onclick="window.history.back()">← Back</button>
+  <button class="back-button-top" onclick="goBack()">← Back</button>
 
   <!-- Playlist Header with Name -->
   <div id="playlist-header">
@@ -151,92 +153,112 @@
   </div>
 
   <script>
-    const CLIENT_ID = '5ea999767e83408aa4fc43c88585a7fa'; // Your Spotify client ID
-    const REDIRECT_URI = 'https://vishnu07122007.github.io/Spotify-Clone/'; // Replace with your redirect URI
-    // Get access token from local storage
-    let accessToken = localStorage.getItem('access_token');
-    if (!accessToken) {
-      window.location.href = '/'; // Redirect to login if not authenticated
-    }
+const CLIENT_ID = '709b894115604c49b9d6ee26b8656e81'; // Your Spotify client ID
+const REDIRECT_URI = 'http://127.0.0.1:3000/index.html'; // Replace with your redirect URI
 
-    // Get playlist ID from URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const playlistId = urlParams.get('id');
+// Get access token from local storage
+let accessToken = localStorage.getItem('access_token');
+if (!accessToken) {
+  window.location.href = '/'; // Redirect to login if not authenticated
+}
 
-    // Extract playlist ID from the URL
-    if (!playlistId) {
-      alert("No playlist ID found in the URL.");
-      window.location.href = "/";  // You can change this to a home page or error page
+// Get playlist ID from URL parameters
+const urlParams = new URLSearchParams(window.location.search);
+const playlistId = urlParams.get('id');
+
+
+
+if (!playlistId) {
+  alert("No playlist ID found in the URL.");
+  window.location.href = "/"; // Redirect to homepage
+} else {
+  console.log('Playlist ID:', playlistId);
+  fetchPlaylistDetails(playlistId);
+}
+ // Custom back function
+ function goBack() {
+    const previousPage = localStorage.getItem('previousPage');
+    if (previousPage) {
+      window.location.href = previousPage;
     } else {
-      console.log('Playlist ID:', playlistId);
-      fetchPlaylistDetails(playlistId);
+      window.location.href = '/'; // Default to home page
     }
-    // Show the loader while fetching data
-    document.getElementById('loader').style.display = 'block';
+  }
+// Show loader while fetching data
+document.getElementById('loader').style.display = 'block';
 
-    // Fetch playlist details from Spotify API
-    function fetchPlaylistDetails(playlistId) {
-      fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          // Log the API response to ensure data is coming through
-          console.log('API Response:', data);
+// Function to fetch playlist details from Spotify API
+function fetchPlaylistDetails(playlistId) {
+  fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log('API Response:', data);
 
-          const playlistName = document.getElementById('playlist-name');
-          const trackList = document.getElementById('track-list');
+      const playlistName = document.getElementById('playlist-name');
+      const trackList = document.getElementById('track-list');
 
-          playlistName.textContent = data.name;
+      playlistName.textContent = data.name;
 
-          // Display tracks
-          const tracks = data.tracks.items;
+      const tracks = data.tracks.items;
+      console.log('Tracks:', tracks);
 
-          // Log tracks to ensure they're available
-          console.log('Tracks:', tracks);
+      localStorage.setItem('trackList', JSON.stringify(tracks));
 
-          // Save tracks to localStorage
-          localStorage.setItem('trackList', JSON.stringify(tracks));
+      if (tracks && tracks.length > 0) {
+        tracks.forEach((track) => {
+          const trackElement = document.createElement('div');
+          trackElement.classList.add('track-item');
+          trackElement.innerHTML = `
+            <img src="${track.track.album.images[0]?.url}" alt="${track.track.name}">
+            <div>
+              <p class="track-name">${track.track.name}</p>
+              <p class="track-artists">${track.track.artists.map((artist) => artist.name).join(', ')}</p>
+            </div>
+          `;
+          trackElement.addEventListener('click', () => {
+  // Save the current page URL in sessionStorage before redirecting
+  sessionStorage.setItem('previousPage', window.location.href);
 
-          if (tracks && tracks.length > 0) {
-            tracks.forEach((track) => {
-              const trackElement = document.createElement('div');
-              trackElement.classList.add('track-item');
-              trackElement.innerHTML = `
-                <img src="${track.track.album.images[0]?.url}" alt="${track.track.name}">
-                <div>
-                  <p class="track-name">${track.track.name}</p>
-                  <p class="track-artists">${track.track.artists.map((artist) => artist.name).join(', ')}</p>
-                </div>
-              `;
+  const trackData = {
+    name: track.track.name,
+    artists: track.track.artists.map((artist) => artist.name).join(', '),
+    albumArt: track.track.album.images[0]?.url || '',
+    spotifyId: track.track.id,
+  };
 
-              // Add click event to redirect to player.html
-              trackElement.addEventListener('click', () => {
-                const previewUrl = track.track.preview_url;
-                const trackData = {
-                  name: track.track.name,
-                  artists: track.track.artists.map((artist) => artist.name).join(', '),
-                  albumArt: track.track.album.images[0]?.url || '',
-                  spotifyId: track.track.id,  // Track Spotify ID
-                };
+  // Redirect to player page with track data
+  window.location.href = `player.html?track=${encodeURIComponent(
+    JSON.stringify(trackData)
+  )}`;
+});
 
-                // Redirect to player page with track data
-                window.location.href = `player.html?track=${encodeURIComponent(
-                  JSON.stringify(trackData)
-                )}`;
-              });
 
-              trackList.appendChild(trackElement);
-            });
-          } else {
-            console.log('No tracks found.');
-            trackList.innerHTML = '<p>No tracks available in this playlist.</p>';
-          }
-        })
-        .catch((error) => console.error('Error fetching playlist details:', error));
-    }
+          trackList.appendChild(trackElement);
+        });
+      } else {
+        console.log('No tracks found.');
+        trackList.innerHTML = '<p>No tracks available in this playlist.</p>';
+      }
+
+      // ✅ Hide loader after data loads successfully
+      document.getElementById('loader').style.display = 'none';
+    })
+    .catch((error) => {
+      console.error('Error fetching playlist details:', error);
+      document.getElementById('loader').style.display = 'none'; // Hide loader on error
+      alert('Failed to load playlist details. Please try again.');
+    });
+}
+
   </script>
 
 </body>

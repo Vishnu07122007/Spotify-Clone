@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Spotify Categories</title>
-  <link rel="stylesheet" href="category.css"> <!-- Include the external stylesheet -->
+  <link rel="stylesheet" href="category.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+
 </head>
 <body>
   <header>
@@ -17,7 +19,6 @@
 
   <main>
     <div id="categories-container" class="categories-grid">
-      <!-- Categories will be dynamically loaded here -->
     </div>
     <div id="loader" class="loader" style="display: none;">Loading...</div>
   </main>
@@ -27,7 +28,6 @@
   </footer>
 
   <script>
-    // Fetch all categories and display them
     function fetchAllCategories() {
       document.getElementById('loader').style.display = 'block';
 
@@ -39,7 +39,7 @@
         .then((response) => response.json())
         .then((data) => {
           const categoriesContainer = document.getElementById('categories-container');
-          categoriesContainer.innerHTML = ''; // Clear existing content
+          categoriesContainer.innerHTML = ''; 
 
           const categories = data.categories.items;
           categories.forEach((category) => {
@@ -60,18 +60,17 @@
         });
     }
 
-    // On page load, fetch categories
     window.onload = () => {
       const token = localStorage.getItem('access_token');
       if (!token) {
-        window.location.href = 'index.html'; // Redirect to login if not authenticated
+        window.location.href = 'index.html'; 
       } else {
         fetchAllCategories();
       }
     };
-    // When the back button is clicked
+   
 document.getElementById('back-btn').addEventListener('click', () => {
-  window.history.back(); // Go back to the previous page
+  window.history.back();
 });
 
   </script>

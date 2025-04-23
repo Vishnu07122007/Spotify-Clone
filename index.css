@@ -25,7 +25,7 @@ margin-bottom: 30px;
   background-color: #181818;
   position: fixed;
   top: 0;
-  left: -250px; /* Sidebar is hidden by default */
+  left: -250px;
   transition: left .3s ease;
   z-index: 1000;
   padding: 20px;
@@ -33,10 +33,10 @@ margin-bottom: 30px;
 }
 
 .sidebar.open {
-  left: 0; /* Sidebar shown when 'open' class is added */
+  left: 0; 
 }
 
-/* Hamburger Menu */
+
 .menu-toggle {
   position: relative;
   left: 1px;
@@ -61,37 +61,33 @@ margin-bottom: 30px;
   font-size: 1.5em;
 }
 
-/* Sidebar and Main Content Interaction (Mobile & Full Screen Mode) */
 @media (max-width: 768px) {
   .sidebar {
-      left: -250px; /* Sidebar hidden by default */
+      left: -250px; 
   }
 
   .sidebar.open {
-      left: 0; /* Sidebar shown when 'open' class is added */
+      left: 0; 
   }
 
   .main-content {
     flex: 1;
     padding: 20px;
     background-color: #121212;
-    transition: margin-left 0.3s ease; /* Smooth transition for content */
+    transition: margin-left 0.3s ease;
     margin-top: 0; 
   }
 
-  /* If sidebar is hidden, main content takes full screen */
   .sidebar.hidden + .main-content {
       margin-left: 0;
   }
 
-  /* If sidebar is shown, content moves to the right */
   .sidebar.open + .main-content {
       margin-left: 250px;
   }
 }
 
 
-/* Optional: Modal Styles */
 .modal {
   position: fixed;
   top: 0;
@@ -114,7 +110,6 @@ margin-bottom: 30px;
   width: 300px;
 }
 
-/* Optional: Modal Styles */
 .modal {
   position: fixed;
   top: 0;
@@ -161,7 +156,6 @@ margin-bottom: 30px;
   background-color: #1ed760;
 }
 
-/* Main Content */
 #main-content {
   display: none;
   flex: 1;
@@ -211,7 +205,6 @@ button:hover {
   margin-bottom: 20px;
 }
 
-/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -238,10 +231,10 @@ button:hover {
 }
 
 #search-btn {
-  flex-shrink: 0; /* Prevent the button from shrinking */
+  flex-shrink: 0; 
   text-align: center;
-  width: 100px; /* Adjusted width */
-  padding: 10px 15px; /* Adjusted padding */
+  width: 100px; 
+  padding: 10px 15px;
   background-color: #1db954;
   border: none;
   border-radius: 50px;
@@ -257,7 +250,7 @@ button:hover {
 /* For responsive design, arrange icons and search bar side by side */
 @media (max-width: 768px) {
   .header {
-    flex-wrap: wrap; /* Allow wrapping if space is tight */
+    flex-wrap: wrap; 
     padding: 10px;
   }
 

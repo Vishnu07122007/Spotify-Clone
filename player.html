@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modern Music Player</title>
+  <title>Spotify Music Player</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+
   <style>
     body {
       margin: 0;
-      padding: 0;
+      padding: 20px;
       font-family: 'Arial', sans-serif;
       display: flex;
       flex-direction: column;
@@ -18,22 +20,23 @@
       justify-content: center;
     }
 
+    /* Back Button */
     .back-button {
       position: absolute;
       top: 20px;
       left: 20px;
-      background-color: rgba(0, 0, 0, 0.6);
+      background-color: #1db954;
       color: white;
       border: none;
-      padding: 12px 18px;
+      padding: 10px 15px;
       font-size: 16px;
-      cursor: pointer;
       border-radius: 8px;
-      transition: background-color 0.3s;
+      cursor: pointer;
+      transition: 0.3s;
     }
 
     .back-button:hover {
-      background-color: rgba(0, 0, 0, 0.8);
+      background-color: #17a748;
     }
 
     .player-container {
@@ -87,49 +90,73 @@
       color: #1db954;
     }
 
-    .seekbar-container {
+    /* Mini Player */
+    #spotify-mini-player {
       width: 100%;
+      max-width: 400px;
+      height: 80px;
       margin-top: 20px;
+      border-radius: 12px;
+      display: none;
     }
 
-    .seekbar {
-      width: 100%;
-      height: 8px;
-      background-color: #444;
-      border-radius: 50px;
-      position: relative;
-      cursor: pointer;
+    #spotify-link {
+      display: none;
+      color: #1db954;
+      font-size: 16px;
+      text-decoration: none;
+      margin-top: 10px;
     }
 
-    .seekbar-progress {
-      height: 100%;
-      background-color: #1db954;
-      border-radius: 50px;
-      width: 0;
+    #spotify-link:hover {
+      text-decoration: underline;
     }
+    .volume-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: center;
+}
 
-    .time {
-      font-size: 14px;
-      color: #bbb;
-      margin-top: 5px;
-      display: flex;
-      justify-content: space-between;
-    }
+#volume-slider {
+  width: 120px;
+  cursor: pointer;
+  appearance: none;
+  background: #1db954;
+  height: 5px;
+  border-radius: 5px;
+}
 
-    @media (max-width: 600px) {
-      .album-art {
-        width: 200px;
-        height: 200px;
-      }
-      .track-name {
-        font-size: 18px;
-      }
-    }
+#volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+#mute-button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#mute-button:hover {
+  color: #1db954;
+}
+
+
   </style>
 </head>
 <body>
+
   <!-- Back Button -->
-  <button class="back-button" onclick="window.history.back()">← Back</button>
+  <button id="back-button" class="back-button">← Back</button>
 
   <!-- Player Container -->
   <div class="player-container">
@@ -143,115 +170,163 @@
       <button id="play-pause-button">▶️</button>
       <button id="next-track">⏭️</button>
     </div>
-
-    <!-- Seekbar -->
-    <div class="seekbar-container">
-      <div class="seekbar" id="seekbar">
-        <div class="seekbar-progress" id="seekbar-progress"></div>
-      </div>
+    <div class="volume-container">
+      <button id="mute-button">🔊</button>
+      <input type="range" id="volume-slider" min="0" max="100" value="100">
     </div>
+    
+    
 
-    <!-- Time display -->
-    <div class="time">
-      <span id="current-time">00:00</span>
-      <span id="duration-time">00:00</span>
-    </div>
+    <!-- Spotify Mini Player -->
+    <iframe id="spotify-mini-player" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+    <a id="spotify-link" target="_blank">Listen on Spotify</a>
   </div>
+  
 
   <script>
-   const urlParams = new URLSearchParams(window.location.search);
-   const trackData = JSON.parse(decodeURIComponent(urlParams.get('track')));
-   const trackList = JSON.parse(localStorage.getItem('trackList')) || []; // Ensure trackList exists
+    // Back button function
+    const previousPage = sessionStorage.getItem('previousPage');
 
-   let currentTrackIndex = trackList.findIndex(track => track.track.name === trackData.name);
-   const audioPlayer = new Audio(trackData.url);
-   let isPlaying = false;
+    // If a previous page exists, set the back button to go back to that page
+    const backButton = document.getElementById('back-button');
+    backButton.addEventListener('click', () => {
+      if (previousPage) {
+        window.location.href = previousPage; // Navigate back to the previous page
+      } else {
+        window.location.href = '/'; // Fallback to home page if no previous page is found
+      }
+    });
 
-   // DOM Elements
-   const albumArt = document.getElementById('album-art');
-   const trackName = document.getElementById('track-name');
-   const trackArtists = document.getElementById('track-artists');
-   const playPauseButton = document.getElementById('play-pause-button');
-   const seekbar = document.getElementById('seekbar');
-   const seekbarProgress = document.getElementById('seekbar-progress');
-   const currentTime = document.getElementById('current-time');
-   const durationTime = document.getElementById('duration-time');
-   const prevTrackButton = document.getElementById('prev-track');
-   const nextTrackButton = document.getElementById('next-track');
+    // Get track data from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const trackData = JSON.parse(decodeURIComponent(urlParams.get('track')));
+    const trackList = JSON.parse(localStorage.getItem('trackList')) || [];
+  
+    let currentTrackIndex = trackList.findIndex(track => track.track.name === trackData.name);
+    const audioPlayer = new Audio(trackData.url);
+    let isPlaying = false;
 
-   // Initialize player with track data
-   function loadTrack(track) {
-     audioPlayer.src = track.url;
-     albumArt.src = track.albumArt;
-     trackName.textContent = track.name;
-     trackArtists.textContent = track.artists;
-     audioPlayer.load();
-     isPlaying = false;
-     playPauseButton.textContent = '▶️';
-   }
+    // DOM Elements
+    const albumArt = document.getElementById('album-art');
+    const trackName = document.getElementById('track-name');
+    const trackArtists = document.getElementById('track-artists');
+    const playPauseButton = document.getElementById('play-pause-button');
+    const prevTrackButton = document.getElementById('prev-track');
+    const nextTrackButton = document.getElementById('next-track');
+    const spotifyMiniPlayer = document.getElementById('spotify-mini-player');
+    const spotifyLink = document.getElementById('spotify-link');
 
-   // Format time in mm:ss
-   function formatTime(seconds) {
-     const minutes = Math.floor(seconds / 60);
-     const secondsLeft = Math.floor(seconds % 60);
-     return `${minutes}:${secondsLeft < 10 ? '0' : ''}${secondsLeft}`;
-   }
+    // Load track into player
+    function loadTrack(track) {
+      audioPlayer.src = track.url || '';  // Load audio preview if available
 
-   // Update seekbar and current time
-   audioPlayer.addEventListener('timeupdate', () => {
-     const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-     seekbarProgress.style.width = `${progress}%`;
-     currentTime.textContent = formatTime(audioPlayer.currentTime);
-   });
+      albumArt.src = track.albumArt;
+      trackName.textContent = track.name;
+      trackArtists.textContent = track.artists;
 
-   // Play/Pause functionality
-   playPauseButton.addEventListener('click', () => {
-     if (isPlaying) {
-       audioPlayer.pause();
-       playPauseButton.textContent = '▶️';
-     } else {
-       audioPlayer.play().catch(console.error);
-       playPauseButton.textContent = '⏸️';
-     }
-     isPlaying = !isPlaying;
-   });
+      // Handle Spotify Mini Player - Lazy Loading the iframe
+      if (track.spotifyId) {
+        spotifyMiniPlayer.style.display = "block"; // Show the iframe
+        spotifyMiniPlayer.src = `https://open.spotify.com/embed/track/${track.spotifyId}`;
+        spotifyLink.href = `https://open.spotify.com/track/${track.spotifyId}`;
+        spotifyLink.style.display = "block";
+      } else {
+        spotifyMiniPlayer.style.display = "none";  // Hide mini player if no ID
+        spotifyLink.style.display = "none";
+      }
 
-   // Handle seekbar click
-   seekbar.addEventListener('click', (e) => {
-     const clickPosition = e.offsetX / seekbar.offsetWidth;
-     audioPlayer.currentTime = clickPosition * audioPlayer.duration;
-   });
+      audioPlayer.load();
+      isPlaying = false;
+      playPauseButton.textContent = '▶️';
+    }
 
-   // Next/Previous Track functionality
-   prevTrackButton.addEventListener('click', () => {
-     currentTrackIndex = (currentTrackIndex - 1 + trackList.length) % trackList.length;
-     const newTrackData = trackList[currentTrackIndex].track;
-     loadTrack({
-       name: newTrackData.name,
-       artists: newTrackData.artists.map(artist => artist.name).join(', '),
-       albumArt: newTrackData.album.images[0]?.url || '',
-       url: newTrackData.preview_url,
-     });
-   });
+    // Play/Pause functionality
+    playPauseButton.addEventListener('click', () => {
+      if (isPlaying) {
+        audioPlayer.pause();
+        playPauseButton.textContent = '▶️';
+      } else {
+        audioPlayer.play().catch(console.error);
+        playPauseButton.textContent = '⏸️';
+      }
+      isPlaying = !isPlaying;
+    });
 
-   nextTrackButton.addEventListener('click', () => {
-     currentTrackIndex = (currentTrackIndex + 1) % trackList.length;
-     const newTrackData = trackList[currentTrackIndex].track;
-     loadTrack({
-       name: newTrackData.name,
-       artists: newTrackData.artists.map(artist => artist.name).join(', '),
-       albumArt: newTrackData.album.images[0]?.url || '',
-       url: newTrackData.preview_url,
-     });
-   });
+    // Next/Previous Track functionality
+    prevTrackButton.addEventListener('click', () => {
+      currentTrackIndex = (currentTrackIndex - 1 + trackList.length) % trackList.length;
+      const newTrackData = trackList[currentTrackIndex].track;
+      loadTrack({
+        name: newTrackData.name,
+        artists: newTrackData.artists.map(artist => artist.name).join(', '),
+        albumArt: newTrackData.album.images[0]?.url || '',
+        url: newTrackData.preview_url,
+        spotifyId: newTrackData.id,  // Ensure Spotify ID is passed
+      });
+    });
 
-   // Initialize with current track data
-   loadTrack(trackData);
+    nextTrackButton.addEventListener('click', () => {
+      currentTrackIndex = (currentTrackIndex + 1) % trackList.length;
+      const newTrackData = trackList[currentTrackIndex].track;
+      loadTrack({
+        name: newTrackData.name,
+        artists: newTrackData.artists.map(artist => artist.name).join(', '),
+        albumArt: newTrackData.album.images[0]?.url || '',
+        url: newTrackData.preview_url,
+        spotifyId: newTrackData.id,  // Ensure Spotify ID is passed
+      });
+    });
 
-   // Update duration
-   audioPlayer.addEventListener('loadedmetadata', () => {
-     durationTime.textContent = formatTime(audioPlayer.duration);
-   });
- </script>
+    // Initialize with current track data
+    loadTrack(trackData);
+
+
+    const volumeSlider = document.getElementById("volume-slider");
+const muteButton = document.getElementById("mute-button");
+
+// Ensure audioPlayer is properly initialized
+if (!audioPlayer) {
+  console.error("Audio player not found!");
+}
+
+// Set initial volume (Full Volume)
+audioPlayer.volume = 1.0;
+
+// Volume Slider Control
+volumeSlider.addEventListener("input", () => {
+  let volumeValue = volumeSlider.value / 100; // Convert to range (0 to 1)
+  audioPlayer.volume = volumeValue;
+  console.log("Volume changed to:", audioPlayer.volume); // Debugging log
+  updateVolumeIcon(volumeValue);
+});
+
+// Mute/Unmute Function
+muteButton.addEventListener("click", () => {
+  if (audioPlayer.volume > 0) {
+    audioPlayer.dataset.previousVolume = audioPlayer.volume; // Save previous volume
+    audioPlayer.volume = 0;
+    volumeSlider.value = 0;
+  } else {
+    audioPlayer.volume = audioPlayer.dataset.previousVolume || 1; // Restore volume
+    volumeSlider.value = audioPlayer.volume * 100;
+  }
+  updateVolumeIcon(audioPlayer.volume);
+});
+
+// Update Volume Icon Based on Level
+function updateVolumeIcon(volume) {
+  if (volume === 0) {
+    muteButton.textContent = "🔇";
+  } else if (volume <= 0.5) {
+    muteButton.textContent = "🔉";
+  } else {
+    muteButton.textContent = "🔊";
+  }
+}
+document.querySelector("audio").volume = 0.0;
+
+
+
+  </script>
 </body>
 </html>

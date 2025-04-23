@@ -1,5 +1,5 @@
-const CLIENT_ID = '5ea999767e83408aa4fc43c88585a7fa'; // Replace with your actual client ID
-const REDIRECT_URI = 'https://vishnu07122007.github.io/Spotify-Clone/'; // Replace with your redirect URI
+const CLIENT_ID = '709b894115604c49b9d6ee26b8656e81'; // Replace with your actual client ID
+const REDIRECT_URI = 'http://127.0.0.1:3000/index.html'; // Replace with your redirect URI
 const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=user-library-read%20playlist-read-private%20playlist-read-collaborative%20user-read-private%20user-read-email%20playlist-modify-public%20playlist-modify-private`;
 
 let accessToken = null;
@@ -42,7 +42,7 @@ function checkLogin() {
 logoutBtn.addEventListener('click', () => {
   localStorage.removeItem('access_token');
   sessionStorage.clear();
-  window.location.replace('https://vishnu07122007.github.io/Spotify-Clone/'); // Redirect to home page
+  window.location.replace('http://127.0.0.1:3000/index.html'); // Redirect to home page
 });
 
 // Check for access token in the URL and handle login
