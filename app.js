@@ -1,5 +1,5 @@
 const CLIENT_ID = '709b894115604c49b9d6ee26b8656e81'; // Replace with your actual client ID
-const REDIRECT_URI = 'https://vishnu07122007.github.io/Spotify-Clone/'; // Replace with your redirect URI
+const REDIRECT_URI = 'login.webrockerz'; // Replace with your redirect URI
 const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=user-library-read%20playlist-read-private%20playlist-read-collaborative%20user-read-private%20user-read-email%20playlist-modify-public%20playlist-modify-private`;
 
 let accessToken = null;
